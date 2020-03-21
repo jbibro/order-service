@@ -17,7 +17,13 @@ public class PlaceOrderUseCase {
 
     @Transactional
     public void execute(OrderRequest orderRequest) {
-        List<Product> products = productRepository.findAllById(orderRequest.getProducts());
+        List<Product> products = productRepository.findAllByIdInAndActiveTrue(orderRequest.getProducts());
+        if (!products.isEmpty()) {
+            save(orderRequest, products);
+        }
+    }
+
+    private void save(OrderRequest orderRequest, List<Product> products) {
         orderRepository.save(
                 Order
                         .builder()
